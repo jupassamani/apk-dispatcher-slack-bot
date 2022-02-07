@@ -16,7 +16,7 @@ const pipeline_api = `https://gitlab.com/api/v4/projects/${project_id}/pipelines
 function generateSuccessReply(user_id, ticket, ref){
   return {
       "replace_original": true,
-      "text": `${user_id} Your request is submitted. Relax :coffee:  while I build the Apk for you!\n> This usually takes 4-5 minutes. I *will ping you* once its done.\n> Your ticket_id - ${ticket} \n> Branch Selected - *${ref}*\nYou can anytime do */get_status [ticket_id]* to know about request status`
+      "text": `${user_id} geração da apk em andamento! Relax :coffee: enqnto a gente gera a apk aqui... !\n> Isso normalmente leva 5-10 minutos. Te mando uma mensagem assim que der sucesso.\n> Teu ticket_id é - ${ticket} \n> Branch selecionada - *${ref}*\nPode dar um */get_status [ticket_id]* a qualquer momento pra ver os updates!!`
     }
 }
 
@@ -25,7 +25,7 @@ function getPipelinesEndpoind(pipeline_id){
 }
 
 function getErrorMessage(errorMsg){
-  return `Something went wrong :cry: (${errorMsg})\n>Ping someone from *engineering-team* to fix this.`;
+  return `iiii algo deu errado :cry: (${errorMsg})\n>Chama um dev for heeeelp!!`;
 }
 
 router.get('/', function(req, res, next) {
@@ -53,16 +53,16 @@ router.post('/get_apk',function(req,res) {
             const final_response = {
                 response_type: 'in_channel',
                 channel: channel_id,
-                text: `Hey ${user_id} ..,`,
+                text: `Olá ${user_id} ..,`,
                 attachments: [{
-                  text: 'Where can I get the Apk for you?',
-                  fallback: 'Where can I get the Apk for you?',
+                  text: 'De que branch você deseja gerar a apk?',
+                  fallback: 'De que branch você deseja gerar a apk?',
                   color: '#2c963f',
                   attachment_type: 'default',
                   callback_id: 'query_selection',
                   actions: [{
                     name: 'query_select_menu',
-                    text: 'Choose an branch...',
+                    text: 'Escolha uma branch...',
                     type: 'select',
                     options: branch_list,
                   }],
@@ -109,7 +109,7 @@ router.post('/actions', async (req,res) => {
                     if(ticket != undefined){
                       return res.send(generateSuccessReply(user_id, ticket, ref));
                     }else{
-                      return res.send(`${response.data.message.base} \n>There is some error with this branch, ping someone from *engineering-team* to fix this.`);
+                      return res.send(`${response.data.message.base} \n>iiii tem alguma coisa errada nessa branch, chama os devs!!.`);
                     }
                 })
                 .catch(function (response) {
@@ -128,7 +128,7 @@ router.post('/actions', async (req,res) => {
 //Triggered from using a slash command. This will post the instructions to slack-api.
 router.post('/help',function(req,res) {
     try {
-        res.send(`To fetch APK, type */get_apk* and enter. Select a *branch* from the response and relax!\n>If you have already placed a request, You can use */get_status [ticked_id]* to get the status of your request`);
+        res.send(`Para gerar uma apk, digite */get_apk* e de enter. Selecione uma *branch* e aguarde!\n>Se você já pediu uma apk, você pode usar */get_status [ticked_id]* pra ver em que status anda!`);
       } catch (err) {
         console.log(err);
         return res.status(500).send(getErrorMessage(`error with code execution /help`));
